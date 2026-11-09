@@ -1,0 +1,23 @@
+{
+  "name": "harness-plugin-pack",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Harness 插件实现：dangerous-op-precheck（危险操作预检清单）与 skill-usage-audit（技能使用审计）",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "check": "npm run build && npm run test",
+    "clean": "node scripts/clean.mjs"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.1.0",
+    "@deepseek-ai/dsh-tools": "0.0.1-rc.1",
+    "@deepseek-ai/schemastery": "3.19.0",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.2"
+  }
+}

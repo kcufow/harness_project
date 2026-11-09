@@ -1,0 +1,23 @@
+# 示例：把插件插入 cordis 配置。
+# 具体字段以你所用的 loader 版本为准；`name` 指向包入口或本地入口文件。
+insert:
+  - id: dangerous-op-precheck
+    name: 'dangerous-op-precheck'
+    config:
+      logDecisions: true
+      rules:
+        - id: rm-recursive
+          match:
+            tool: bash
+            commandPattern: 'rm\s+-[a-z]*r|mkfs|dd\s+if='
+          mode: ask
+          checklist:
+            - 已确认目标路径正确，不是根目录或重要数据目录
+            - 已确认有可用的备份或回滚方案
+            - 已确认本次删除范围不超出预期
+        - id: deny-secrets
+          match:
+            tool: [write, edit]
+            pathPattern: '\.env(\..*)?$|id_rsa|\.pem$'
+          mode: block
+          message: 拒绝写入敏感文件。如需修改，请手动操作或先临时调整配置。

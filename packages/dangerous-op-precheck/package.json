@@ -1,0 +1,42 @@
+{
+  "name": "dangerous-op-precheck",
+  "version": "0.1.0",
+  "description": "危险操作预检清单：在工具执行前按用户自定义规则拦截，并逐项列出确认清单（ask / block）",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/index.d.ts",
+    "lib/rules.js",
+    "lib/rules.d.ts",
+    "cordis.example.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test \"lib/test/*.test.js\""
+  },
+  "keywords": [
+    "dsh-plugin",
+    "harness",
+    "approval",
+    "precheck"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.1.0",
+    "@deepseek-ai/dsh-tools": "^0.0.1-rc.1",
+    "@deepseek-ai/schemastery": "^3.19.0"
+  }
+}

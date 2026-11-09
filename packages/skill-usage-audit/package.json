@@ -1,0 +1,50 @@
+{
+  "name": "skill-usage-audit",
+  "version": "0.1.0",
+  "description": "技能使用审计：统计最近 N 天各技能的调用次数、成功率与最近调用时间（只读会话日志）",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/index.d.ts",
+    "lib/report.js",
+    "lib/report.d.ts",
+    "lib/audit.js",
+    "lib/audit.d.ts",
+    "lib/logfile.js",
+    "lib/logfile.d.ts",
+    "lib/sources.js",
+    "lib/sources.d.ts",
+    "lib/types.js",
+    "lib/types.d.ts",
+    "cordis.example.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test \"lib/test/*.test.js\""
+  },
+  "keywords": [
+    "dsh-plugin",
+    "harness",
+    "skill",
+    "audit"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.15"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.1.0",
+    "@deepseek-ai/dsh-tools": "^0.0.1-rc.1",
+    "@deepseek-ai/schemastery": "^3.19.0"
+  }
+}

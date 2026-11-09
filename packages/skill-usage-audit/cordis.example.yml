@@ -1,0 +1,18 @@
+# 示例：把插件插入 cordis 配置。
+# 具体字段以你所用的 loader 版本为准；`name` 指向包入口或本地入口文件。
+insert:
+  - id: skill-usage-audit
+    name: 'skill-usage-audit'
+    config:
+      defaultDays: 7
+      maxSessions: 200
+      maxRows: 50
+      includeGenericTools: false
+      dispatcherTools: [skill]
+      knownSkills:
+        - game-studio-concept
+        - game-studio-design
+        - game-studio-build
+        - game-studio-release
+        - game-studio-qa
+      sessionsRoot: ''
