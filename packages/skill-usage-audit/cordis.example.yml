@@ -1,18 +1,19 @@
-# 示例：把插件插入 cordis 配置。
-# 具体字段以你所用的 loader 版本为准；`name` 指向包入口或本地入口文件。
-insert:
-  - id: skill-usage-audit
-    name: 'skill-usage-audit'
-    config:
-      defaultDays: 7
-      maxSessions: 200
-      maxRows: 50
-      includeGenericTools: false
-      dispatcherTools: [skill]
-      knownSkills:
-        - game-studio-concept
-        - game-studio-design
-        - game-studio-build
-        - game-studio-release
-        - game-studio-qa
-      sessionsRoot: ''
+# dsh --patch 用的 overlay，也可直接作为 profile 的 cordis.patch.yml 内容。
+# 顶层必须是数组：每个元素是一条 loader patch entry，`insert` 里列出要插入的插件行。
+# 实测基于 dsh 0.2.2-rc.1；写成顶层 `insert:` 对象会被 dsh 拒绝。
+- insert:
+    - id: skill-usage-audit
+      name: 'skill-usage-audit'
+      config:
+        defaultDays: 7
+        maxSessions: 200
+        maxRows: 50
+        includeGenericTools: false
+        dispatcherTools: [skill]
+        knownSkills:
+          - game-studio-concept
+          - game-studio-design
+          - game-studio-build
+          - game-studio-release
+          - game-studio-qa
+        sessionsRoot: ''

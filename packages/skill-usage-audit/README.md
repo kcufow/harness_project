@@ -12,6 +12,8 @@ dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
 dsh plugin --profile desktop add ./skill-usage-audit-0.1.0.tgz
 ```
 
+`dsh plugin` 要求 `pnpm` 在 PATH 上，且会把包作为普通依赖安装；要真正挂载，需把 `cordis.example.yml` 合入 profile 的 `cordis.patch.yml`（或启动时用 `--patch` 传入）。完整流程见 [`docs/真机验证.md`](../../docs/真机验证.md)。
+
 ## 工具
 
 ```text

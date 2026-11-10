@@ -13,6 +13,8 @@ dsh plugin --profile web add ./dangerous-op-precheck-0.1.0.tgz
 dsh plugin --profile desktop add ./dangerous-op-precheck-0.1.0.tgz
 ```
 
+`dsh plugin` 要求 `pnpm` 在 PATH 上，且会把包作为普通依赖安装；要真正挂载，需把 `cordis.example.yml` 合入 profile 的 `cordis.patch.yml`（或启动时用 `--patch` 传入）。完整流程见 [`docs/真机验证.md`](../../docs/真机验证.md)。
+
 插件导出标准的 cordis 插件字段（`name` / `inject` / `Config` / `apply`），任何 loader 条目都可以插入它，配置片段见 `cordis.example.yml`。
 
 ## 配置

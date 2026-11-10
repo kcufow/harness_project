@@ -46,8 +46,10 @@ npm run clean      # 删除 lib/
 
 ```bash
 npm ci && npm run build && npm pack --workspaces
-npx @deepseek-ai/dsh plugin --profile web add ./packages/dangerous-op-precheck/dangerous-op-precheck-0.1.0.tgz
-npx @deepseek-ai/dsh plugin --profile web add ./packages/skill-usage-audit/skill-usage-audit-0.1.0.tgz
+# tgz 产物落在仓库根目录；dsh plugin 要求 pnpm 在 PATH 上
+npx @deepseek-ai/dsh plugin --profile web add ./dangerous-op-precheck-0.1.0.tgz
+npx @deepseek-ai/dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
+# 装完还需把各包 cordis.example.yml 合入 profile 的 cordis.patch.yml，或用 --patch 传入
 ```
 
 ## 实现要点
@@ -69,7 +71,7 @@ npx @deepseek-ai/dsh plugin --profile web add ./packages/skill-usage-audit/skill
 
 ## 两份文档里被证伪的假设
 
-落地时对着 `@deepseek-ai/*` 已发布包的真实类型逐个核对过（`dsh-tools@0.0.1-rc.1`、`dsh-user-approval@0.0.1-rc.1`、`dsh-session-query@0.0.1-rc.1`、`dsh-tool-skill@0.0.1-rc.1`），文档示例代码有几处与真实 API 不一致：
+落地时对着 `@deepseek-ai/*` 已发布包的真实类型逐个核对过（dsh 0.2.2-rc.1 运行时的 `dsh-tools@0.2.2-rc.1` 及 `dsh-user-approval` / `dsh-session-query` / `dsh-tool-skill` 同版本线），文档示例代码有几处与真实 API 不一致：
 
 | 文档写法 | 真实情况 | 处理 |
 | --- | --- | --- |
