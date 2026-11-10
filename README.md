@@ -34,22 +34,20 @@ scripts/clean.mjs
 ```bash
 npm ci
 npm run build      # 两个包各自 tsc 编译到 lib/
-npm test           # node --test，共 84 个用例
+npm test           # node --test，共 87 个用例
 npm run smoke      # 端到端冒烟：加载 lib/ 验证插件接线（构造数据）
 npm run check      # build + test + smoke，CI 跑这条
 npm run clean      # 删除 lib/
 ```
 
-`npm run smoke` 只验证模块间接线，事件与会话是构造数据；真实审批弹窗与会话日志仍需在装有 `dsh` CLI 的 Harness 环境里验证。
+`npm run smoke` 只验证模块间接线，事件与会话是构造数据；真实审批弹窗与会话日志仍需在装有 `dsh` CLI 的 Harness 环境里验证，环境配置与完整步骤见 [docs/真机验证.md](docs/真机验证.md)。
 
-打包与安装（以 web profile 为例）：
+打包与安装（以 web profile 为例；npx 零安装方式没有全局 `dsh` 命令，需写全）：
 
 ```bash
-cd packages/dangerous-op-precheck && npm pack && cd -
-dsh plugin --profile web add ./packages/dangerous-op-precheck/dangerous-op-precheck-0.1.0.tgz
-
-cd packages/skill-usage-audit && npm pack && cd -
-dsh plugin --profile web add ./packages/skill-usage-audit/skill-usage-audit-0.1.0.tgz
+npm ci && npm run build && npm pack --workspaces
+npx @deepseek-ai/dsh plugin --profile web add ./packages/dangerous-op-precheck/dangerous-op-precheck-0.1.0.tgz
+npx @deepseek-ai/dsh plugin --profile web add ./packages/skill-usage-audit/skill-usage-audit-0.1.0.tgz
 ```
 
 ## 实现要点
@@ -65,7 +63,7 @@ dsh plugin --profile web add ./packages/skill-usage-audit/skill-usage-audit-0.1.
 ### 技能使用审计
 
 - 技能名**不在工具名里**：所有技能共用 `skill` 工具，名字在参数 `name` 里，必须按 dispatcher 解析。
-- 数据源双轨：`ctx.sessionQuery`（首选，后端无关）→ jsonl 存档兜底（`<root>/<project>/<session>/session.jsonl[.zstd]`，含 zstd 解压与旧平铺布局兼容）。
+- 数据源双轨：`ctx.sessionQuery`（首选，后端无关）→ jsonl 存档兜底（`<root>/<project>/<session>/*.jsonl[.zstd]`，按后缀识别任意世代如 `session.v3.jsonl.zstd`，含 zstd 解压与旧平铺布局兼容）。
 - `tool/call` 与 `tool/result` 按 `callId` 配对；失败优先看事件 `error`，其次 `isError`；没有结果的调用单独记“待定”，不算成功也不算失败。
 - 报告是纯文本表格，中文技能名按显示宽度（CJK=2 列）对齐。
 

@@ -51,7 +51,31 @@ interface DiscoveredLog {
   createdAt: number
 }
 
-const LOG_FILES = ['session.jsonl', 'session.jsonl.zstd'] as const
+/**
+ * 认的存档后缀。目录式布局早期是 `session.jsonl[.zstd]`，官方当前世代是
+ * `session.v3.jsonl.zstd`；按后缀匹配而不是硬编码文件名，世代升级后不会漏读。
+ */
+const LOG_FILE_RE = /\.jsonl(\.zstd)?$/
+
+/** 在一个会话目录里挑出该用的存档；新旧世代并存时取修改时间最新的那个。 */
+async function findSessionLog(sessionDir: string, id: string): Promise<DiscoveredLog | undefined> {
+  let entries
+  try {
+    entries = await readdir(sessionDir, { withFileTypes: true })
+  } catch {
+    return undefined
+  }
+
+  const candidates: DiscoveredLog[] = []
+  for (const entry of entries) {
+    if (!entry.isFile() || !LOG_FILE_RE.test(entry.name)) continue
+    const path = join(sessionDir, entry.name)
+    const info = await stat(path).catch(() => undefined)
+    if (info?.isFile()) candidates.push({ id, path, createdAt: info.mtimeMs })
+  }
+  candidates.sort((a, b) => b.createdAt - a.createdAt)
+  return candidates[0]
+}
 
 /** 递归两层扫描 jsonl 存档目录。 */
 async function discoverLogs(root: string): Promise<DiscoveredLog[]> {
@@ -75,22 +99,16 @@ async function discoverLogs(root: string): Promise<DiscoveredLog[]> {
 
     for (const entry of entries) {
       if (entry.isDirectory()) {
-        for (const name of LOG_FILES) {
-          const path = join(projectDir, entry.name, name)
-          const info = await stat(path).catch(() => undefined)
-          if (info?.isFile()) {
-            found.push({ id: entry.name, path, createdAt: info.mtimeMs })
-            break
-          }
-        }
+        const log = await findSessionLog(join(projectDir, entry.name), entry.name)
+        if (log) found.push(log)
         continue
       }
       // 兼容旧的平铺布局：<root>/<project>/<id>.jsonl
-      if (entry.isFile() && /\.jsonl(\.zstd)?$/.test(entry.name)) {
+      if (entry.isFile() && LOG_FILE_RE.test(entry.name)) {
         const path = join(projectDir, entry.name)
         const info = await stat(path).catch(() => undefined)
         if (info) {
-          found.push({ id: entry.name.replace(/\.jsonl(\.zstd)?$/, ''), path, createdAt: info.mtimeMs })
+          found.push({ id: entry.name.replace(LOG_FILE_RE, ''), path, createdAt: info.mtimeMs })
         }
       }
     }

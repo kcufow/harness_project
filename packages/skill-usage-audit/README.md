@@ -73,7 +73,7 @@ config:
 
 **首选 `ctx.sessionQuery`**（`@deepseek-ai/dsh-session-query`）：`listSessions()` 拿会话列表，`readSession(id)` 拿完整事件流。后端无关、跨 live/持久化，也不用关心存档是 JSONL 还是 zstd。
 
-**兜底：直接读 jsonl 存档**（`ctx.sessionQuery` 未提供时）：扫 `<root>/<project>/<session>/session.jsonl[.zstd]`，兼容旧的平铺 `<root>/<project>/<id>.jsonl`，`.zstd` 用 Node 内置 zstd 流式解压。此时会话 ID 用目录名，创建时间用文件 mtime 近似。
+**兜底：直接读 jsonl 存档**（`ctx.sessionQuery` 未提供时）：扫 `<root>/<project>/<session>/` 下任意 `*.jsonl` / `*.jsonl.zstd`，因此早期 `session.jsonl` 与官方当前世代 `session.v3.jsonl.zstd` 都能识别，兼容旧的平铺 `<root>/<project>/<id>.jsonl`；同一目录并存多个世代时取 mtime 最新的那个。`.zstd` 用 Node 内置 zstd 流式解压。此时会话 ID 用目录名，创建时间用文件 mtime 近似。
 
 ## 与方案文档的四处校正
 
