@@ -7,7 +7,7 @@
 ## 安装
 
 ```bash
-pnpm pack                        # 产出 skill-usage-audit-0.1.0.tgz
+npm pack                         # 产出 skill-usage-audit-0.1.0.tgz
 dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
 dsh plugin --profile desktop add ./skill-usage-audit-0.1.0.tgz
 ```

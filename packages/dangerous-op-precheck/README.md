@@ -8,7 +8,7 @@
 
 ```bash
 # 打包后在目标 profile 里安装
-pnpm pack                        # 产出 dangerous-op-precheck-0.1.0.tgz
+npm pack                         # 产出 dangerous-op-precheck-0.1.0.tgz
 dsh plugin --profile web add ./dangerous-op-precheck-0.1.0.tgz
 dsh plugin --profile desktop add ./dangerous-op-precheck-0.1.0.tgz
 ```

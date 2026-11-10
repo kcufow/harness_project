@@ -7,10 +7,14 @@
   "workspaces": [
     "packages/*"
   ],
+  "engines": {
+    "node": ">=22.15"
+  },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "check": "npm run build && npm run test",
+    "smoke": "node scripts/smoke.mjs",
+    "check": "npm run build && npm run test && npm run smoke",
     "clean": "node scripts/clean.mjs"
   },
   "devDependencies": {

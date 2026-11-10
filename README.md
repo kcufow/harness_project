@@ -32,11 +32,15 @@ scripts/clean.mjs
 ## 快速开始
 
 ```bash
-npm install
+npm ci
 npm run build      # 两个包各自 tsc 编译到 lib/
 npm test           # node --test，共 84 个用例
+npm run smoke      # 端到端冒烟：加载 lib/ 验证插件接线（构造数据）
+npm run check      # build + test + smoke，CI 跑这条
 npm run clean      # 删除 lib/
 ```
+
+`npm run smoke` 只验证模块间接线，事件与会话是构造数据；真实审批弹窗与会话日志仍需在装有 `dsh` CLI 的 Harness 环境里验证。
 
 打包与安装（以 web profile 为例）：
 
