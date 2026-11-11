@@ -1,0 +1,15 @@
+# dsh.bundle patch —— `dsh plugin add` 后自动作为 profile layer 应用，无需手写挂载。
+# 需要自定义配置（尤其是 knownSkills）时，在 profile 的 cordis.patch.yml 里
+# 按同一个 id 重写整行：patch 是整行 config 替换，用户层最后写入、优先级更高。
+# 顶层必须是数组；实测基于 dsh 0.2.2-rc.1。
+- insert:
+    - id: skill-usage-audit
+      name: 'skill-usage-audit'
+      config:
+        defaultDays: 7
+        maxSessions: 200
+        maxRows: 50
+        includeGenericTools: false
+        dispatcherTools: [skill]
+        knownSkills: []
+        sessionsRoot: ''

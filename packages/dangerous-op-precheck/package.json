@@ -17,9 +17,15 @@
     "lib/index.d.ts",
     "lib/rules.js",
     "lib/rules.d.ts",
+    "cordis.patch.yml",
     "cordis.example.yml",
     "README.md"
   ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "node --test \"lib/test/*.test.js\""

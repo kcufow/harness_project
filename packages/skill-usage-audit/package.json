@@ -25,9 +25,15 @@
     "lib/sources.d.ts",
     "lib/types.js",
     "lib/types.d.ts",
+    "cordis.patch.yml",
     "cordis.example.yml",
     "README.md"
   ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "node --test \"lib/test/*.test.js\""

@@ -1,0 +1,25 @@
+# dsh.bundle patch —— `dsh plugin add` 后自动作为 profile layer 应用，无需手写挂载。
+# 需要自定义规则时，在 profile 的 cordis.patch.yml 里按同一个 id 重写整行：
+# patch 是整行 config 替换（不是逐字段合并），用户层最后写入、优先级更高。
+# 顶层必须是数组；实测基于 dsh 0.2.2-rc.1。
+- insert:
+    - id: dangerous-op-precheck
+      name: 'dangerous-op-precheck'
+      config:
+        logDecisions: true
+        rules:
+          - id: rm-recursive
+            match:
+              tool: bash
+              commandPattern: 'rm\s+-[a-z]*r|mkfs|dd\s+if='
+            mode: ask
+            checklist:
+              - 已确认目标路径正确，不是根目录或重要数据目录
+              - 已确认有可用的备份或回滚方案
+              - 已确认本次删除范围不超出预期
+          - id: deny-secrets
+            match:
+              tool: [write, edit]
+              pathPattern: '\.env(\..*)?$|id_rsa|\.pem$'
+            mode: block
+            message: 拒绝写入敏感文件。如需修改，请手动操作或先临时调整配置。

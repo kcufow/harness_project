@@ -7,15 +7,16 @@
 ## 安装
 
 ```bash
-# 打包后在目标 profile 里安装
-npm pack                         # 产出 dangerous-op-precheck-0.1.0.tgz
-dsh plugin --profile web add ./dangerous-op-precheck-0.1.0.tgz
-dsh plugin --profile desktop add ./dangerous-op-precheck-0.1.0.tgz
+# 在仓库根目录打包（npm workspaces 的 tgz 产物落在根目录）
+npm pack --workspaces
+npx @deepseek-ai/dsh plugin --profile web add ./dangerous-op-precheck-0.1.0.tgz
 ```
 
-`dsh plugin` 要求 `pnpm` 在 PATH 上，且会把包作为普通依赖安装；要真正挂载，需把 `cordis.example.yml` 合入 profile 的 `cordis.patch.yml`（或启动时用 `--patch` 传入）。完整流程见 [`docs/真机验证.md`](../../docs/真机验证.md)。
+`dsh plugin` 要求 `pnpm` 在 PATH 上。本包声明了 `dsh.bundle`，装完会**自动成为 profile layer**：`dsh.profile.bundles` 里出现包名，包内 `cordis.patch.yml` 由 dsh 自动应用，不需要再手写挂载配置。
 
-插件导出标准的 cordis 插件字段（`name` / `inject` / `Config` / `apply`），任何 loader 条目都可以插入它，配置片段见 `cordis.example.yml`。
+要自定义规则，在 profile 的 `cordis.patch.yml` 里按同一个 `id` 重写整行 `config`（patch 是**整行替换**，不是逐字段合并；用户层最后写入、优先级更高），或启动时用 `--patch` 传入随包附带的 `cordis.example.yml`。完整流程见 [`docs/真机验证.md`](../../docs/真机验证.md)。
+
+插件导出标准的 cordis 插件字段（`name` / `inject` / `Config` / `apply`），任何 loader 条目都可以插入它。
 
 ## 配置
 
@@ -66,7 +67,7 @@ config:
 
 ## 与方案文档的三处校正
 
-文档里的示例代码是按伪 API 写的，落地时对齐了 `@deepseek-ai/*` 已发布的真实类型（`dsh-tools@0.0.1-rc.1`、`dsh-user-approval@0.0.1-rc.1`）：
+文档里的示例代码是按伪 API 写的，落地时对齐了 `@deepseek-ai/*` 已发布的真实类型（dsh 0.2.2-rc.1 运行时的 `dsh-tools@0.2.2-rc.1`、`dsh-user-approval` 同版本线）：
 
 1. **不自己调 `ctx.approval.request()`**。真实签名是 `request({ agent, toolName, callId?, reason?, signal? })`：`agent` 必填、没有 `displayReason`、且要求当前有打开的 turn，插件层直接调很容易在空闲时抛错。pre-execute 返回 `{ kind: 'ask', reason }` 就是官方通道——registry 内部会带着 `agent`/`callId`/`signal` 去调 approval 并翻译结果，策略（`never`）也自动生效。
 2. **决策是返回值，不是 `throw`**。`tools/pre-execute` 是 waterfall，`throw` 会被 registry 包成工具错误（模型看到的是崩溃而不是“用户拒绝”）。

@@ -1,0 +1,36 @@
+# 发布两个插件包到 npm。
+# 触发方式：推 vX.Y.Z tag，或在 GitHub Actions 里手动 workflow_dispatch。
+# 需要仓库 secret NPM_TOKEN（具备 publish 权限的 automation token）。
+# 注意：Gitee 私有仓库不会触发本 workflow，需先同步到 GitHub 公开仓库。
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+      - run: npm ci
+      # 只跑 check：上游 dsh-tools 传递依赖的 zod <4.6.6 会报 8 个 high，
+      # 需等上游升级，不能用 npm audit fix --force 破坏与 dsh 的版本对齐。
+      - run: npm run check
+      # 根包 private，显式按 workspace 发布，避免误发容器包。
+      - run: npm publish --workspace dangerous-op-precheck --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --workspace skill-usage-audit --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -17,7 +17,8 @@ packages/
     src/rules.ts        规则编译与匹配（零依赖纯函数）
     src/index.ts        插件入口：挂 tools/pre-execute
     src/test/           单测
-    cordis.example.yml  配置示例
+    cordis.patch.yml    dsh.bundle 默认配置（安装即自动挂载）
+    cordis.example.yml  完整配置示例
   skill-usage-audit/
     src/types.ts        会话事件/数据源的最小结构
     src/logfile.ts      jsonl 存档宽容解析
@@ -26,6 +27,8 @@ packages/
     src/sources.ts      sessionQuery / jsonl 两条数据源
     src/index.ts        插件入口：注册 skill_usage_report 工具
     src/test/
+    cordis.patch.yml    dsh.bundle 默认配置
+    cordis.example.yml  完整配置示例
 scripts/
   clean.mjs             删除 lib/
   smoke.mjs              端到端冒烟（workspace lib/）
@@ -33,6 +36,8 @@ scripts/
   dsh-register.mjs       注册 ESM resolve hook
   dsh-module-hook.mjs    复现 dsh 运行时的 peer 依赖解析
 docs/真机验证.md         dsh 安装、配置与真机验证清单
+CHANGELOG.md             版本策略与变更记录
+.npmrc / .github/workflows/  npm 发布配置与 CI / publish workflow
 ```
 
 ## 快速开始
@@ -56,10 +61,14 @@ npm ci && npm run build && npm pack --workspaces
 # tgz 产物落在仓库根目录；dsh plugin 要求 pnpm 在 PATH 上
 npx @deepseek-ai/dsh plugin --profile web add ./dangerous-op-precheck-0.1.0.tgz
 npx @deepseek-ai/dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
-# 装完还需把各包 cordis.example.yml 合入 profile 的 cordis.patch.yml，或用 --patch 传入
-npx @deepseek-ai/dsh web --dump-config   # 确认组合树里出现两个插件
+# 两个包都声明了 dsh.bundle，装完自动成为 profile layer，无需手写 cordis.patch.yml
+npx @deepseek-ai/dsh web --dump-config   # 不带 --patch 也能看到两个插件
 npm run smoke:installed                 # 确认安装产物可加载且接线正确
 ```
+
+`dsh.bundle` 指向各包内的 `cordis.patch.yml`（默认配置，已包含基本规则）。自定义配置时在 profile 的 `cordis.patch.yml` 里按同一 `id` 重写整行 `config`——patch 是**整行替换**而非逐字段合并，用户层最后写入、优先级更高；随包附带的 `cordis.example.yml` 是更完整的示例。市场的 registry 安装路径会直接拒绝没有 `dsh.bundle` 声明的包，所以这也是上架必需项。
+
+版本口径要分清：**构建/测试**两个插件包用 `engines.node >=22.15`；**真机运行 dsh 0.2.2-rc.1** 需要 Node `>=24.9.0`。
 
 ## 实现要点
 
@@ -97,8 +106,19 @@ npm run smoke:installed                 # 确认安装产物可加载且接线�
 - 预检的参数提取依赖键名约定；自定义工具（如 `sql` / `url`）请用 `argsPattern` 兜底。
 - 审计只判断“是否报错”，评不了调用质量；`knownSkills` 需手填，插件无法自动发现技能包全部技能。
 - 审计的 jsonl 兜底路线在 Node < 22.15 上无法解压 zstd 存档，会给出明确报错。
+- **上游依赖审计**：`npm audit --omit=dev` 报 8 个 high，根源是 `@deepseek-ai/dsh-tools` 传递依赖里的 `zod <4.6.6`（GHSA-mrhx-c7xc-m3w5）。这是 dsh 0.2.2-rc.1 运行时的上游问题，**不要跑 `npm audit fix --force`**（会破坏与 dsh 的 peer 版本对齐，且提示 `Will install undefined@undefined`）。等上游升级后同步处理；CI / publish workflow 只跑 `npm run check`，不把 audit 设为门禁。
 
 ## 发布
 
-源码推到 GitHub 公开仓库 → 在 `awesome-dsh-plugin` 提 PR（市场自动抓取）→ `npm publish --access public`。
+**已就绪的工程配置**：`.npmrc`（`access=public`）、`.github/workflows/publish.yml`（推 `vX.Y.Z` tag 或手动触发）、`CHANGELOG.md`（版本策略与变更记录）、两个包的 `dsh.bundle` 声明。发布 workflow 会先跑 `npm run check`，再按 workspace 分别 `npm publish` 两个包（根包 `private` 不会发布），需要仓库 secret `NPM_TOKEN`。
+
+**发布顺序（尚未执行，需账号与授权）**：
+
+1. 同步源码到 GitHub 公开仓库，在仓库 Settings 里配置 `NPM_TOKEN`。
+2. 按 `CHANGELOG.md` 的版本策略改两个包的版本号，跑 `npm install` 同步 lock、更新 CHANGELOG。
+3. 打 `v0.1.0` tag → 触发 publish workflow；或本地 `npm publish --workspace <name> --access public`。
+4. 在 `awesome-dsh-plugin` 提 PR（市场自动抓取），申请官方插件作者扶持计划。
+
+> **注意**：当前仓库托管在 **Gitee 私有仓库**，`.github/workflows/ci.yml` 与 `publish.yml` 都不会被触发；必须先同步到 GitHub 公开仓库，或改用 Gitee Go 执行等效的 `npm ci && npm run check`。两个 workflow 文件已就绪但未实际运行过。
+
 官方扶持申请材料可参考两个插件 README 里的“与方案文档的校正”一节：强调「不预设规则的检查流程」与「只读不写的存量用户信息缺口补位」。

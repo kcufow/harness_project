@@ -7,12 +7,14 @@
 ## 安装
 
 ```bash
-npm pack                         # 产出 skill-usage-audit-0.1.0.tgz
-dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
-dsh plugin --profile desktop add ./skill-usage-audit-0.1.0.tgz
+# 在仓库根目录打包（npm workspaces 的 tgz 产物落在根目录）
+npm pack --workspaces
+npx @deepseek-ai/dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
 ```
 
-`dsh plugin` 要求 `pnpm` 在 PATH 上，且会把包作为普通依赖安装；要真正挂载，需把 `cordis.example.yml` 合入 profile 的 `cordis.patch.yml`（或启动时用 `--patch` 传入）。完整流程见 [`docs/真机验证.md`](../../docs/真机验证.md)。
+`dsh plugin` 要求 `pnpm` 在 PATH 上。本包声明了 `dsh.bundle`，装完会**自动成为 profile layer**：`dsh.profile.bundles` 里出现包名，包内 `cordis.patch.yml` 由 dsh 自动应用，不需要再手写挂载配置。默认的 `knownSkills` 为空数组，建议按 [`id` 重写整行配置](#配置)填上自己技能包的技能名，才能报告“零调用技能”。
+
+要自定义配置，在 profile 的 `cordis.patch.yml` 里按同一个 `id` 重写整行 `config`（patch 是**整行替换**，不是逐字段合并；用户层最后写入、优先级更高），或启动时用 `--patch` 传入随包附带的 `cordis.example.yml`。完整流程见 [`docs/真机验证.md`](../../docs/真机验证.md)。
 
 ## 工具
 
@@ -79,7 +81,7 @@ config:
 
 ## 与方案文档的四处校正
 
-文档假设“技能调用就是 tool/call，name 即技能标识”。对齐 `dsh-tool-skill@0.0.1-rc.1` 的真实实现后，有四处必须改：
+文档假设“技能调用就是 tool/call，name 即技能标识”。对齐 dsh 0.2.2-rc.1 运行时 `dsh-tool-skill@0.2.2-rc.1` 的真实实现后，有四处必须改：
 
 1. **技能名不在工具名里**。所有技能共用同一个 `skill` 工具（参数 `{ name: '<技能名>' }`），所以必须从参数解析。只看 `name` 字段会得到一条 `skill` 的统计，等于没统计。
 2. **`ctx.sessionQuery` 没有 `readHistory()`**。真实 API 是 `listSessions(signal?)` → `readSession(id)` → `{ session, events }`，且 `listSessions` 不接受 `since` 过滤，所以这里按 `header.createdAt` 倒序 + `maxSessions` 截断，再按事件 `time` 做窗口过滤。
