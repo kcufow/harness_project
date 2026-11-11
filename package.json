@@ -14,6 +14,7 @@
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "smoke": "node scripts/smoke.mjs",
+    "smoke:installed": "node --import ./scripts/dsh-register.mjs ./scripts/smoke-installed.mjs",
     "check": "npm run build && npm run test && npm run smoke",
     "clean": "node scripts/clean.mjs"
   },

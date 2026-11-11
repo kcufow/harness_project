@@ -26,7 +26,13 @@ packages/
     src/sources.ts      sessionQuery / jsonl 两条数据源
     src/index.ts        插件入口：注册 skill_usage_report 工具
     src/test/
-scripts/clean.mjs
+scripts/
+  clean.mjs             删除 lib/
+  smoke.mjs              端到端冒烟（workspace lib/）
+  smoke-installed.mjs    dsh profile 安装产物冒烟
+  dsh-register.mjs       注册 ESM resolve hook
+  dsh-module-hook.mjs    复现 dsh 运行时的 peer 依赖解析
+docs/真机验证.md         dsh 安装、配置与真机验证清单
 ```
 
 ## 快速开始
@@ -36,11 +42,12 @@ npm ci
 npm run build      # 两个包各自 tsc 编译到 lib/
 npm test           # node --test，共 87 个用例
 npm run smoke      # 端到端冒烟：加载 lib/ 验证插件接线（构造数据）
+npm run smoke:installed  # 验证 dsh profile 里的 tgz 安装产物（需先装插件，见下）
 npm run check      # build + test + smoke，CI 跑这条
 npm run clean      # 删除 lib/
 ```
 
-`npm run smoke` 只验证模块间接线，事件与会话是构造数据；真实审批弹窗与会话日志仍需在装有 `dsh` CLI 的 Harness 环境里验证，环境配置与完整步骤见 [docs/真机验证.md](docs/真机验证.md)。
+`npm run smoke` 只验证模块间接线，事件与会话是构造数据。`npm run smoke:installed` 进一步加载 `~/.dsh/profiles/web/node_modules` 下由 tgz 解包的**发布产物**，能抓到 `npm pack` 漏文件、`exports` 指错、peer 依赖在宿主缺失等问题；它默认用仓库根 `node_modules` 提供 peer，可用 `DSH_RUNTIME_NODE_MODULES` 指向 dsh 安装目录，用 `DSH_PROFILE_NODE_MODULES` 覆盖 profile 路径。该命令依赖本机 dsh profile，因此**不并入 `npm run check`**。两者都不能替代真实审批弹窗与会话日志验证，环境配置与完整步骤见 [docs/真机验证.md](docs/真机验证.md)。
 
 打包与安装（以 web profile 为例；npx 零安装方式没有全局 `dsh` 命令，需写全）：
 
@@ -50,6 +57,8 @@ npm ci && npm run build && npm pack --workspaces
 npx @deepseek-ai/dsh plugin --profile web add ./dangerous-op-precheck-0.1.0.tgz
 npx @deepseek-ai/dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
 # 装完还需把各包 cordis.example.yml 合入 profile 的 cordis.patch.yml，或用 --patch 传入
+npx @deepseek-ai/dsh web --dump-config   # 确认组合树里出现两个插件
+npm run smoke:installed                 # 确认安装产物可加载且接线正确
 ```
 
 ## 实现要点
