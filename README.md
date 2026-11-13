@@ -126,7 +126,7 @@ git push origin master && git push github master
 
 - GitHub 公开仓库已创建并推送，CI 持续 `success`；根 `LICENSE` 被识别为 MIT，topic 为 `dsh-plugin`（单数）。
 - 两包发布元数据指向该仓库；`npm run check`、`npm pack --workspaces`、两包 `npm publish --dry-run` 均通过。
-- GitHub 仓库 secret `NPM_TOKEN` 已配置；`v0.1.0` tag 已推送，publish workflow（run `43374965883`）`success`。
+- GitHub 仓库 secret `NPM_TOKEN` 已配置；`v0.1.0` / `v0.1.1` tag 均已推送，两次 publish workflow（`43374965883` / `43376968409`）都 `success`。
 - **`0.1.0` 首发、`0.1.1` 当前最新**：[`dangerous-op-precheck`](https://www.npmjs.com/package/dangerous-op-precheck) 与 [`skill-usage-audit`](https://www.npmjs.com/package/skill-usage-audit) 均已上线 npm，含 `dsh.bundle` / `cordis.patch.yml` / LICENSE 并带 provenance 证明；`0.1.1` 让包内 README 也显示直装命令。从 npm registry 安装的链路已在隔离环境实测通过（`docs/真机验证.md` 第十六节）。
 
 直接从 npm 安装（两个包都声明了 `dsh.bundle`，装完自动成为 profile layer）：

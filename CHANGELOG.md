@@ -34,6 +34,7 @@
 ### Changed
 
 - 两个包的 README 安装段补上 npm 包名直装命令（`0.1.0` 的 tarball 内仍是旧版说明，npm 包页面要等本版才更新）。
+- publish workflow run `43376968409` / `success`；`0.1.1` 在 workflow 结束后约 2–3 分钟才于 registry 可见（`dist-tags.latest` 才切到 `0.1.1`），比首发的 CDN 延迟更久，别在缓存刷新前误判发布失败。
 - 文档中的本地 tgz 示例同步到 `0.1.1`；根 private 容器包版本同步。
 - 隔离 `DSH_HOME=/tmp/dsh-registry-home` 实测：从 npm registry 直接 `dsh plugin --profile web add <包名>` 安装两个包，`dsh.profile.bundles` 自动包含两者、用户 patch 仍为 `[]`、`web --dump-config` 不带 `--patch` 时两个插件各 1 条且带 bundle 默认配置（`docs/真机验证.md` 第十六节）。
 
