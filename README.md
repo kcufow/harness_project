@@ -147,6 +147,8 @@ git push origin master && git push github master
 
 Generate Token 后**立刻复制**（只在创建时显示一次，之后只能看到首尾 4 位），粘进 GitHub 的 Secret 框，点 Add secret。不要把 token 贴进对话、代码、README 或日志。
 
+> **网页打不开时**：`www.npmjs.com` 的注册/登录常被 Datadome + Cloudflare 拦成「访问暂时受限」，而 `registry.npmjs.org` 正常。换出口 IP（手机热点）+ 干净浏览器是主要解法，完整排查见 [docs/真机验证.md](docs/真机验证.md) 第十四节。
+
 > npm 计划于 **2027 年 1 月**移除 bypass-2FA token 的直接发布能力。官方推荐 **trusted publishing（OIDC，无需长期 token，自动生成 provenance）**，但配置入口在「包设置页」，两个包首发前还不存在，所以首发只能先用 token；发布后到每个包的 Settings → Trusted Publisher 配置 GitHub Actions（workflow filename 填 `publish.yml`，workflow 需 `id-token: write`，CI 需 Node ≥22.14 且 npm CLI ≥11.5.1，建议升到 Node 24），再去掉 `NODE_AUTH_TOKEN`。
 
 > `publish.yml` 只在 GitHub 侧生效，且必须先有 `NPM_TOKEN`；缺 secret 时打 tag 会因 `NODE_AUTH_TOKEN` 为空而失败。Gitee 私有仓库不会执行 `.github/workflows/`，如需在 Gitee 侧校验请改用 Gitee Go 跑等效的 `npm ci && npm run check`。

@@ -18,6 +18,7 @@
 - 校正 README / CI / publish workflow 中「GitHub 仓库尚未创建」「Gitee 私有仓库不会触发 Actions」「workflow 未运行过」等过时口径；README 增加 CI 状态徽章与双远程同步说明。
 - 实测并修正用户 profile 迁移方案：patch 的 `insert` 是追加而非去重，bundle 层与用户层同 id 会留下两条 entry；改用 `- id:` override patch 后每个插件仅一条且保留定制配置（`docs/真机验证.md` 第十三节）。
 - 校正 npm 发布凭据口径：2025-11 起 legacy / automation token 已移除，首发须用 Granular Access Token（All Packages + Read and write (publish and stage) + Bypass 2FA）；记录 2027-01 直接发布能力下线后迁移到 trusted publishing（OIDC）的路线，详见 README 发布章节。
+- 记录 npm 网页注册被风控的排查（`docs/真机验证.md` 第十四节）：网页 403 而 registry 200、换出口 IP 为主解、CLI legacy 注册可能返回 403、Granular Token 只能在网页生成。
 
 ### 待办
 
