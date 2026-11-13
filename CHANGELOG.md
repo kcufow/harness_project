@@ -20,13 +20,22 @@
 - 校正 npm 发布凭据口径：2025-11 起 legacy / automation token 已移除，首发须用 Granular Access Token（All Packages + Read and write (publish and stage) + Bypass 2FA）；记录 2027-01 直接发布能力下线后迁移到 trusted publishing（OIDC）的路线，详见 README 发布章节。
 - 记录 npm 网页注册被风控的排查（`docs/真机验证.md` 第十四节）：网页 403 而 registry 200、换出口 IP 为主解、CLI legacy 注册可能返回 403、Granular Token 只能在网页生成。
 - **`v0.1.0` 已发布**（`docs/真机验证.md` 第十五节）：push tag 触发 publish workflow（run `43374965883` / `success`），两个包均已上线 npm、带 provenance；记录 `0.0.0-stage` 占位版本与 tarball CDN 延迟现象。README 与两个包 README 补充 npm 直装命令。
+- **`v0.1.1` 已发布**：让包内 README 带上 npm 直装命令；隔离 `DSH_HOME` 从 npm registry 实测安装通过（`docs/真机验证.md` 第十六节）。
 
 ### 待办
 
 - 真实 Harness 交互验证：审批弹窗、`.env` 拒绝、`skill_usage_report` 的真实统计。
-- 给 GitHub 仓库补 topic `deepseek-harness`、向 `awesome-dsh-plugin` 提 PR、申请官方插件作者扶持。
+- 给 GitHub 仓库补 topic `deepseek-harness`、向 `awesome-dsh-plugin` 提 PR、申请官方插件作者扶持（规则见 `docs/真机验证.md` 第十七节）。
 - 2027-01 前把 CI 发布迁移到 npm trusted publishing（OIDC），避免 bypass-2FA token 直接发布能力下线。
 - v2 候选：`knownSkills` 自动发现、检查项表单校验、自定义工具参数键名配置。
+
+## [0.1.1] - 2026-11-13
+
+### Changed
+
+- 两个包的 README 安装段补上 npm 包名直装命令（`0.1.0` 的 tarball 内仍是旧版说明，npm 包页面要等本版才更新）。
+- 文档中的本地 tgz 示例同步到 `0.1.1`；根 private 容器包版本同步。
+- 隔离 `DSH_HOME=/tmp/dsh-registry-home` 实测：从 npm registry 直接 `dsh plugin --profile web add <包名>` 安装两个包，`dsh.profile.bundles` 自动包含两者、用户 patch 仍为 `[]`、`web --dump-config` 不带 `--patch` 时两个插件各 1 条且带 bundle 默认配置（`docs/真机验证.md` 第十六节）。
 
 ## [0.1.0] - 2026-11-13
 

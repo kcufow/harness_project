@@ -1,6 +1,6 @@
 {
   "name": "dangerous-op-precheck",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "危险操作预检清单：在工具执行前按用户自定义规则拦截，并逐项列出确认清单（ask / block）",
   "type": "module",
   "main": "lib/index.js",

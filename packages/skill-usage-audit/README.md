@@ -16,7 +16,7 @@ npx @deepseek-ai/dsh plugin --profile web add skill-usage-audit
 
 ```bash
 npm pack --workspaces
-npx @deepseek-ai/dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
+npx @deepseek-ai/dsh plugin --profile web add ./skill-usage-audit-0.1.1.tgz
 ```
 
 `dsh plugin` 要求 `pnpm` 在 PATH 上。本包声明了 `dsh.bundle`，装完会**自动成为 profile layer**：`dsh.profile.bundles` 里出现包名，包内 `cordis.patch.yml` 由 dsh 自动应用，不需要再手写挂载配置。默认的 `knownSkills` 为空数组，建议按 [`id` 重写整行配置](#配置)填上自己技能包的技能名，才能报告“零调用技能”。

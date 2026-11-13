@@ -16,7 +16,7 @@ npx @deepseek-ai/dsh plugin --profile web add dangerous-op-precheck
 
 ```bash
 npm pack --workspaces
-npx @deepseek-ai/dsh plugin --profile web add ./dangerous-op-precheck-0.1.0.tgz
+npx @deepseek-ai/dsh plugin --profile web add ./dangerous-op-precheck-0.1.1.tgz
 ```
 
 `dsh plugin` 要求 `pnpm` 在 PATH 上。本包声明了 `dsh.bundle`，装完会**自动成为 profile layer**：`dsh.profile.bundles` 里出现包名，包内 `cordis.patch.yml` 由 dsh 自动应用，不需要再手写挂载配置。

@@ -1,6 +1,6 @@
 {
   "name": "harness-plugin-pack",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Harness 插件实现：dangerous-op-precheck（危险操作预检清单）与 skill-usage-audit（技能使用审计）",
