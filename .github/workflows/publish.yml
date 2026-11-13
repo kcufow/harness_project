@@ -1,7 +1,7 @@
 # 发布两个插件包到 npm。
 # 触发方式：推 vX.Y.Z tag，或在 GitHub Actions 里手动 workflow_dispatch。
 # 需要仓库 secret NPM_TOKEN（具备 publish 权限的 automation token）。
-# 注意：Gitee 私有仓库不会触发本 workflow，需先同步到 GitHub 公开仓库。
+# 只在 GitHub 侧生效：Gitee 不触发 Actions；打 tag 前先 git push github master。
 name: Publish
 
 on:

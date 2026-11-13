@@ -1,5 +1,6 @@
-# 注意：本仓库当前托管在 Gitee 私有仓库，GitHub Actions 不会触发。
-# 需同步到 GitHub 公开仓库，或改用 Gitee Go 执行等效的 `npm ci && npm run check`。
+# 双远程：origin = Gitee 私有仓库（不触发 Actions），github = GitHub 公开仓库（触发 Actions）。
+# 改完代码两边都要推：git push origin master && git push github master。
+# 已在 kcufow/harness_project 的 master 上实测通过（run 43350271592）。
 name: CI
 
 on:

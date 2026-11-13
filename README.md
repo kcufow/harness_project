@@ -1,5 +1,9 @@
 # harness_project
 
+[![CI](https://github.com/kcufow/harness_project/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/kcufow/harness_project/actions/workflows/ci.yml)
+
+> 本仓库是 npm workspaces monorepo：两个可安装的 dsh 插件分别在 `packages/dangerous-op-precheck` 与 `packages/skill-usage-audit`，各自声明 `dsh.bundle` 并附带 `cordis.patch.yml`；根 `package.json` 是 `private: true` 的容器包，不发布、也不是插件。
+
 两个 Harness 插件（cordis plugin）的完整实现，对应仓库里的两份方案文档：
 
 | 插件 | 对应文档 | 定位 |
@@ -110,15 +114,26 @@ npm run smoke:installed                 # 确认安装产物可加载且接线�
 
 ## 发布
 
+**仓库**：Gitee `origin`（私有）与 GitHub `github`（公开，`kcufow/harness_project`，`master`）双远程同步，两端 HEAD 一致。GitHub Actions 只在 GitHub 侧触发，改完代码两边都要推：
+
+```bash
+git push origin master && git push github master
+```
+
 **已就绪的工程配置**：`.npmrc`（`access=public`）、`.github/workflows/publish.yml`（推 `vX.Y.Z` tag 或手动触发）、`CHANGELOG.md`（版本策略与变更记录）、两个包的 `dsh.bundle` 声明。发布 workflow 会先跑 `npm run check`，再按 workspace 分别 `npm publish` 两个包（根包 `private` 不会发布），需要仓库 secret `NPM_TOKEN`。
 
-**发布顺序（尚未执行，需账号与授权）**：
+**已完成**：
 
-1. 在 `https://github.com/kcufow/harness_project` 创建**公开**仓库（Owner `kcufow`，仓库名 `harness_project`；**不要**勾 README / .gitignore / license，因为要导入已有仓库），推送后在 Settings 里配置 `NPM_TOKEN` 并加 topic `dsh-plugin`。
-2. 按 `CHANGELOG.md` 的版本策略改两个包的版本号，跑 `npm install` 同步 lock、更新 CHANGELOG。
-3. 打 `v0.1.0` tag → 触发 publish workflow；或本地 `npm publish --workspace <name> --access public`。
+- GitHub 公开仓库已创建并推送，CI 首次运行成功（`npm ci && npm run check`，run `43350271592` / `success`）；根 `LICENSE` 被识别为 MIT。
+- 两包发布元数据指向该仓库；`npm pack --workspaces`、`npm publish --dry-run`（两包）、`npm run check`、`npm run smoke:installed` 均通过。
+
+**仍待账号授权（尚未执行）**：
+
+1. 在 GitHub 仓库页 **About → Topics** 加 `dsh-plugin`（市场自动收录的入场券）。
+2. **Settings → Secrets and variables → Actions → New repository secret**：名称 `NPM_TOKEN`，值为具备 publish 权限的 npm automation token。
+3. 按 `CHANGELOG.md` 的版本策略改两个包版本号，`npm install` 同步 lock、更新 CHANGELOG，推 `v0.1.0` tag 触发 publish workflow（或在 Actions 页手动 `workflow_dispatch`）；也可本地 `npm publish --workspace <name> --access public`。
 4. 在 `awesome-dsh-plugin` 提 PR（市场自动抓取），申请官方插件作者扶持计划。
 
-> **注意**：当前仓库托管在 **Gitee 私有仓库**，`.github/workflows/ci.yml` 与 `publish.yml` 都不会被触发；必须先同步到 GitHub 公开仓库，或改用 Gitee Go 执行等效的 `npm ci && npm run check`。两个 workflow 文件已就绪但未实际运行过。
+> `publish.yml` 只在 GitHub 侧生效，且必须先有 `NPM_TOKEN`；缺 secret 时打 tag 会因 `NODE_AUTH_TOKEN` 为空而失败。Gitee 私有仓库不会执行 `.github/workflows/`，如需在 Gitee 侧校验请改用 Gitee Go 跑等效的 `npm ci && npm run check`。
 
 官方扶持申请材料可参考两个插件 README 里的“与方案文档的校正”一节：强调「不预设规则的检查流程」与「只读不写的存量用户信息缺口补位」。
