@@ -129,7 +129,7 @@ git push origin master && git push github master
 
 **仍待账号授权（尚未执行）**：
 
-1. 在 GitHub 仓库页 **About → Topics** 加 `dsh-plugin`（市场自动收录的入场券）。
+1. 在 GitHub 仓库页 **About → Topics** 加 **`dsh-plugin`（单数）**——市场只同步这个 topic，写成 `dsh-plugins` 不会被收录；若还要提 awesome 精选 PR，再加 `deepseek-harness`（该列表要求两个都有）。
 2. **Settings → Secrets and variables → Actions → New repository secret**：名称 `NPM_TOKEN`，值按下述步骤生成的 npm token。
 3. 按 `CHANGELOG.md` 的版本策略改两个包版本号，`npm install` 同步 lock、更新 CHANGELOG，推 `v0.1.0` tag 触发 publish workflow（或在 Actions 页手动 `workflow_dispatch`）；也可本地 `npm publish --workspace <name> --access public`。
 4. 在 `awesome-dsh-plugin` 提 PR（市场自动抓取），申请官方插件作者扶持计划。

@@ -22,7 +22,7 @@
 ### 待办
 
 - 真实 Harness 交互验证：审批弹窗、`.env` 拒绝、`skill_usage_report` 的真实统计。
-- 给 GitHub 仓库加 topic `dsh-plugin`、配置 `NPM_TOKEN` secret，发布两个包到 npm，再向 `awesome-dsh-plugin` 提 PR、申请官方插件作者扶持。
+- 给 GitHub 仓库加 topic `dsh-plugin`（单数，市场只同步这个）+ `deepseek-harness`、配置 `NPM_TOKEN` secret，发布两个包到 npm，再向 `awesome-dsh-plugin` 提 PR、申请官方插件作者扶持。
 - v2 候选：`knownSkills` 自动发现、检查项表单校验、自定义工具参数键名配置。
 
 ## [0.1.0] - 2026-11-11
