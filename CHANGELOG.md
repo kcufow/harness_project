@@ -11,6 +11,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 两个包补齐 `author` / `repository` / `homepage` / `bugs` / `publishConfig` 发布元数据，目标仓库定为 `kcufow/harness_project`（GitHub 仓库尚未创建）。
+
 ### 待办
 
 - 真实 Harness 交互验证：审批弹窗、`.env` 拒绝、`skill_usage_report` 的真实统计。

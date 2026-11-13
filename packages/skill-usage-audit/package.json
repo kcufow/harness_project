@@ -45,6 +45,19 @@
     "audit"
   ],
   "license": "MIT",
+  "author": "lidawei",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kcufow/harness_project.git",
+    "directory": "packages/skill-usage-audit"
+  },
+  "homepage": "https://github.com/kcufow/harness_project/tree/master/packages/skill-usage-audit#readme",
+  "bugs": {
+    "url": "https://github.com/kcufow/harness_project/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=22.15"
   },

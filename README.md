@@ -114,7 +114,7 @@ npm run smoke:installed                 # 确认安装产物可加载且接线�
 
 **发布顺序（尚未执行，需账号与授权）**：
 
-1. 同步源码到 GitHub 公开仓库，在仓库 Settings 里配置 `NPM_TOKEN`。
+1. 在 `https://github.com/kcufow/harness_project` 创建**公开**仓库（Owner `kcufow`，仓库名 `harness_project`；**不要**勾 README / .gitignore / license，因为要导入已有仓库），推送后在 Settings 里配置 `NPM_TOKEN` 并加 topic `dsh-plugin`。
 2. 按 `CHANGELOG.md` 的版本策略改两个包的版本号，跑 `npm install` 同步 lock、更新 CHANGELOG。
 3. 打 `v0.1.0` tag → 触发 publish workflow；或本地 `npm publish --workspace <name> --access public`。
 4. 在 `awesome-dsh-plugin` 提 PR（市场自动抓取），申请官方插件作者扶持计划。
