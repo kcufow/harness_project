@@ -130,9 +130,24 @@ git push origin master && git push github master
 **仍待账号授权（尚未执行）**：
 
 1. 在 GitHub 仓库页 **About → Topics** 加 `dsh-plugin`（市场自动收录的入场券）。
-2. **Settings → Secrets and variables → Actions → New repository secret**：名称 `NPM_TOKEN`，值为具备 publish 权限的 npm automation token。
+2. **Settings → Secrets and variables → Actions → New repository secret**：名称 `NPM_TOKEN`，值按下述步骤生成的 npm token。
 3. 按 `CHANGELOG.md` 的版本策略改两个包版本号，`npm install` 同步 lock、更新 CHANGELOG，推 `v0.1.0` tag 触发 publish workflow（或在 Actions 页手动 `workflow_dispatch`）；也可本地 `npm publish --workspace <name> --access public`。
 4. 在 `awesome-dsh-plugin` 提 PR（市场自动抓取），申请官方插件作者扶持计划。
+
+**`NPM_TOKEN` 怎么生成（2026 年口径）**：npm 自 2025 年 11 月起只支持 **Granular Access Token**，legacy / automation token 已移除。到 npmjs.com 右上角头像 → **Access Tokens → Generate New Token**：
+
+| 表单项 | 填法 |
+| --- | --- |
+| Token name | `harness_project-publish` |
+| Bypass two-factor authentication | **勾选**（CI 非交互发布必须，否则会卡在 2FA 挑战） |
+| Packages and scopes → Permissions | **Read and write (publish and stage)** |
+| Select Packages | **All Packages**（两个包尚未创建，选不到具体包） |
+| Expiration | 1 年（到期需重新生成并覆盖 secret） |
+| Allowed IP Ranges | 留空（GitHub-hosted runner 的 IP 不固定） |
+
+Generate Token 后**立刻复制**（只在创建时显示一次，之后只能看到首尾 4 位），粘进 GitHub 的 Secret 框，点 Add secret。不要把 token 贴进对话、代码、README 或日志。
+
+> npm 计划于 **2027 年 1 月**移除 bypass-2FA token 的直接发布能力。官方推荐 **trusted publishing（OIDC，无需长期 token，自动生成 provenance）**，但配置入口在「包设置页」，两个包首发前还不存在，所以首发只能先用 token；发布后到每个包的 Settings → Trusted Publisher 配置 GitHub Actions（workflow filename 填 `publish.yml`，workflow 需 `id-token: write`，CI 需 Node ≥22.14 且 npm CLI ≥11.5.1，建议升到 Node 24），再去掉 `NODE_AUTH_TOKEN`。
 
 > `publish.yml` 只在 GitHub 侧生效，且必须先有 `NPM_TOKEN`；缺 secret 时打 tag 会因 `NODE_AUTH_TOKEN` 为空而失败。Gitee 私有仓库不会执行 `.github/workflows/`，如需在 Gitee 侧校验请改用 Gitee Go 跑等效的 `npm ci && npm run check`。
 
