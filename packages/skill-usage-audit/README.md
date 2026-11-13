@@ -6,8 +6,15 @@
 
 ## 安装
 
+已发布到 npm（[`skill-usage-audit`](https://www.npmjs.com/package/skill-usage-audit)），直接装包名：
+
 ```bash
-# 在仓库根目录打包（npm workspaces 的 tgz 产物落在根目录）
+npx @deepseek-ai/dsh plugin --profile web add skill-usage-audit
+```
+
+开发时要验证本地改动，再从仓库根目录打包安装：
+
+```bash
 npm pack --workspaces
 npx @deepseek-ai/dsh plugin --profile web add ./skill-usage-audit-0.1.0.tgz
 ```

@@ -124,24 +124,33 @@ git push origin master && git push github master
 
 **已完成**：
 
-- GitHub 公开仓库已创建并推送，CI 首次运行成功（`npm ci && npm run check`，run `43350271592` / `success`）；根 `LICENSE` 被识别为 MIT。
-- 两包发布元数据指向该仓库；`npm pack --workspaces`、`npm publish --dry-run`（两包）、`npm run check`、`npm run smoke:installed` 均通过。
+- GitHub 公开仓库已创建并推送，CI 持续 `success`；根 `LICENSE` 被识别为 MIT，topic 为 `dsh-plugin`（单数）。
+- 两包发布元数据指向该仓库；`npm run check`、`npm pack --workspaces`、两包 `npm publish --dry-run` 均通过。
+- GitHub 仓库 secret `NPM_TOKEN` 已配置；`v0.1.0` tag 已推送，publish workflow（run `43374965883`）`success`。
+- **`0.1.0` 已发布到 npm**：[`dangerous-op-precheck`](https://www.npmjs.com/package/dangerous-op-precheck) 与 [`skill-usage-audit`](https://www.npmjs.com/package/skill-usage-audit) 均为 `latest`，含 `dsh.bundle` / `cordis.patch.yml` / LICENSE，并带 provenance 证明；`npm pack <name>@0.1.0` 已从 registry 实测下载成功。
 
-**仍待账号授权（尚未执行）**：
+直接从 npm 安装（两个包都声明了 `dsh.bundle`，装完自动成为 profile layer）：
 
-1. 在 GitHub 仓库页 **About → Topics** 加 **`dsh-plugin`（单数）**——市场只同步这个 topic，写成 `dsh-plugins` 不会被收录；若还要提 awesome 精选 PR，再加 `deepseek-harness`（该列表要求两个都有）。
-2. **Settings → Secrets and variables → Actions → New repository secret**：名称 `NPM_TOKEN`，值按下述步骤生成的 npm token。
-3. 按 `CHANGELOG.md` 的版本策略改两个包版本号，`npm install` 同步 lock、更新 CHANGELOG，推 `v0.1.0` tag 触发 publish workflow（或在 Actions 页手动 `workflow_dispatch`）；也可本地 `npm publish --workspace <name> --access public`。
-4. 在 `awesome-dsh-plugin` 提 PR（市场自动抓取），申请官方插件作者扶持计划。
+```bash
+npx @deepseek-ai/dsh plugin --profile web add dangerous-op-precheck
+npx @deepseek-ai/dsh plugin --profile web add skill-usage-audit
+npx @deepseek-ai/dsh web --dump-config   # 不带 --patch 也能看到两个插件
+```
 
-**`NPM_TOKEN` 怎么生成（2026 年口径）**：npm 自 2025 年 11 月起只支持 **Granular Access Token**，legacy / automation token 已移除。到 npmjs.com 右上角头像 → **Access Tokens → Generate New Token**：
+**剩余步骤（尚未执行）**：
+
+1. 在 `awesome-dsh-plugin` 提 PR 申请收录；若走该精选列表，再给仓库补 topic `deepseek-harness`（要求 `dsh-plugin` + `deepseek-harness` 两个都有）。
+2. 申请官方插件作者扶持计划。
+3. 后续发版：按 `CHANGELOG.md` 的版本策略改两个包版本号 → `npm install` 同步 lock → 推 `vX.Y.Z` tag。
+
+**`NPM_TOKEN` 怎么生成（2026 年口径，已配置，留作轮换与后续发版参考）**：npm 自 2025 年 11 月起只支持 **Granular Access Token**，legacy / automation token 已移除。到 npmjs.com 右上角头像 → **Access Tokens → Generate New Token**：
 
 | 表单项 | 填法 |
 | --- | --- |
 | Token name | `harness_project-publish` |
 | Bypass two-factor authentication | **勾选**（CI 非交互发布必须，否则会卡在 2FA 挑战） |
 | Packages and scopes → Permissions | **Read and write (publish and stage)** |
-| Select Packages | **All Packages**（两个包尚未创建，选不到具体包） |
+| Select Packages | 首发时包还不存在，只能选 **All Packages**；现已发布，轮换时可改为 **Only select packages** 只勾这两个包，缩小权限范围 |
 | Expiration | 1 年（到期需重新生成并覆盖 secret） |
 | Allowed IP Ranges | 留空（GitHub-hosted runner 的 IP 不固定） |
 
@@ -149,7 +158,7 @@ Generate Token 后**立刻复制**（只在创建时显示一次，之后只能�
 
 > **网页打不开时**：`www.npmjs.com` 的注册/登录常被 Datadome + Cloudflare 拦成「访问暂时受限」，而 `registry.npmjs.org` 正常。换出口 IP（手机热点）+ 干净浏览器是主要解法，完整排查见 [docs/真机验证.md](docs/真机验证.md) 第十四节。
 
-> npm 计划于 **2027 年 1 月**移除 bypass-2FA token 的直接发布能力。官方推荐 **trusted publishing（OIDC，无需长期 token，自动生成 provenance）**，但配置入口在「包设置页」，两个包首发前还不存在，所以首发只能先用 token；发布后到每个包的 Settings → Trusted Publisher 配置 GitHub Actions（workflow filename 填 `publish.yml`，workflow 需 `id-token: write`，CI 需 Node ≥22.14 且 npm CLI ≥11.5.1，建议升到 Node 24），再去掉 `NODE_AUTH_TOKEN`。
+> npm 计划于 **2027 年 1 月**移除 bypass-2FA token 的直接发布能力。官方推荐 **trusted publishing（OIDC，无需长期 token，自动生成 provenance）**：两个包现已发布，可到每个包的 Settings → Trusted Publisher 配置 GitHub Actions（workflow filename 填 `publish.yml`，workflow 需 `id-token: write`，CI 需 Node ≥22.14 且 npm CLI ≥11.5.1，建议升到 Node 24），验证通过后再去掉 `NODE_AUTH_TOKEN`。
 
 > `publish.yml` 只在 GitHub 侧生效，且必须先有 `NPM_TOKEN`；缺 secret 时打 tag 会因 `NODE_AUTH_TOKEN` 为空而失败。Gitee 私有仓库不会执行 `.github/workflows/`，如需在 Gitee 侧校验请改用 Gitee Go 跑等效的 `npm ci && npm run check`。
 
